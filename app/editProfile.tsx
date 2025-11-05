@@ -1,14 +1,14 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -42,6 +42,7 @@ const EditProfileScreen = () => {
     const fullNameTrimmed = fullName.trim();
     const emailTrimmed = email.trim();
     const phoneTrimmed = phone.trim();
+    const passwordTrimmed = password.trim();
 
     if (!fullNameTrimmed) {
       showToast("error", "Thiếu tên", "Vui lòng nhập họ tên.");
@@ -70,6 +71,18 @@ const EditProfileScreen = () => {
       return;
     }
 
+    // Check if any changes were made
+    const hasChanges = 
+      fullNameTrimmed !== (user?.fullName || "") ||
+      emailTrimmed !== (user?.email || "") ||
+      phoneTrimmed !== (user?.phone || "") ||
+      passwordTrimmed !== "";
+
+    if (!hasChanges) {
+      showToast("info", "Không có thay đổi", "Bạn chưa thay đổi thông tin nào.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -81,8 +94,8 @@ const EditProfileScreen = () => {
       };
 
       // Only include password if user wants to change it
-      if (password.trim()) {
-        payload.password = password.trim(); // Send as 'password', backend will hash it
+      if (passwordTrimmed) {
+        payload.password = passwordTrimmed; // Send as 'password', backend will hash it
       }
 
       // Call API to update user

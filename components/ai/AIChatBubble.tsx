@@ -2,6 +2,7 @@ import { askAboutElectricVehicles } from "@/api/gemini";
 import { aiChatStyles } from "@/styles/aiChat.styles";
 import { showToast } from "@/utils/toast";
 import Feather from "@expo/vector-icons/Feather";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
@@ -26,6 +27,8 @@ interface AIChatBubbleProps {
   vehiclesData: any[];
 }
 
+const CHAT_STORAGE_KEY = "@ai_chat_messages";
+
 const AIChatBubble: React.FC<AIChatBubbleProps> = ({ vehiclesData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -41,6 +44,59 @@ const AIChatBubble: React.FC<AIChatBubbleProps> = ({ vehiclesData }) => {
   
   const scrollViewRef = useRef<ScrollView>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const loadChatHistory = async () => {
+    try {
+      const storedMessages = await AsyncStorage.getItem(CHAT_STORAGE_KEY);
+      if (storedMessages) {
+        const parsedMessages = JSON.parse(storedMessages);
+        // Convert timestamp strings back to Date objects
+        const messagesWithDates = parsedMessages.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        }));
+        setMessages(messagesWithDates);
+        console.log("✅ Loaded chat history:", messagesWithDates.length, "messages");
+      }
+    } catch (error) {
+      console.error("Error loading chat history:", error);
+    }
+  };
+
+  const clearChatHistory = async () => {
+    try {
+      await AsyncStorage.removeItem(CHAT_STORAGE_KEY);
+      setMessages([
+        {
+          id: "welcome",
+          text: "Xin chào! 👋 Tôi là trợ lý AI chuyên về xe điện. Bạn có thể hỏi tôi về các dòng xe điện, giá thuê, hoặc tư vấn chọn xe phù hợp. Hãy đặt câu hỏi nhé!",
+          sender: "ai",
+          timestamp: new Date(),
+        },
+      ]);
+      showToast("success", "Đã xóa", "Lịch sử chat đã được xóa");
+    } catch (error) {
+      console.error("Error clearing chat history:", error);
+    }
+  };
+
+  // Load chat history from AsyncStorage when component mounts
+  useEffect(() => {
+    loadChatHistory();
+     
+  }, []);
+
+  // Save chat history to AsyncStorage whenever messages change
+  useEffect(() => {
+    const saveMessages = async () => {
+      try {
+        await AsyncStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+      } catch (error) {
+        console.error("Error saving chat history:", error);
+      }
+    };
+    saveMessages();
+  }, [messages]);
 
   // Auto scroll to bottom when new message
   useEffect(() => {
@@ -164,9 +220,14 @@ const AIChatBubble: React.FC<AIChatBubbleProps> = ({ vehiclesData }) => {
             </Text>
           </View>
         </View>
-        <Pressable onPress={toggleChat} style={aiChatStyles.closeButton}>
-          <Feather name="x" size={24} color="#fff" />
-        </Pressable>
+        <View style={aiChatStyles.headerRight}>
+          <Pressable onPress={clearChatHistory} style={aiChatStyles.clearButton}>
+            <Feather name="trash-2" size={18} color="#fff" />
+          </Pressable>
+          <Pressable onPress={toggleChat} style={aiChatStyles.closeButton}>
+            <Feather name="x" size={24} color="#fff" />
+          </Pressable>
+        </View>
       </View>
 
       {/* Messages */}
@@ -188,7 +249,7 @@ const AIChatBubble: React.FC<AIChatBubbleProps> = ({ vehiclesData }) => {
           >
             {message.sender === "ai" && (
               <View style={aiChatStyles.aiIcon}>
-                <Feather name="cpu" size={16} color="#2563eb" />
+                <Feather name="cpu" size={16} color="#18181B" />
               </View>
             )}
             <View style={aiChatStyles.messageContent}>
@@ -215,10 +276,10 @@ const AIChatBubble: React.FC<AIChatBubbleProps> = ({ vehiclesData }) => {
         {isLoading && (
           <View style={[aiChatStyles.messageBubble, aiChatStyles.aiBubble]}>
             <View style={aiChatStyles.aiIcon}>
-              <Feather name="cpu" size={16} color="#2563eb" />
+              <Feather name="cpu" size={16} color="#18181B" />
             </View>
             <View style={aiChatStyles.loadingBubble}>
-              <ActivityIndicator size="small" color="#2563eb" />
+              <ActivityIndicator size="small" color="#18181B" />
               <Text style={aiChatStyles.loadingText}>Đang suy nghĩ...</Text>
             </View>
           </View>

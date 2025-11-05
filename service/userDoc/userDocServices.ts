@@ -16,9 +16,11 @@ const userDocServices = {
     try {
       console.log(`📡 Calling GET /userDocs/${userId}...`);
       
+      // Use the correct endpoint with user's _id
       const response = await apiClient.get(`/userDocs/${userId}`);
       
       console.log(`✅ GET /userDocs/${userId} success:`, response.data);
+      console.log('Full response:', JSON.stringify(response.data, null, 2));
       
       // Handle different response structures
       if (response.data?.userDoc) {
@@ -27,6 +29,11 @@ const userDocServices = {
       
       if (response.data?.data) {
         return response.data.data;
+      }
+
+      // Check if response.data is an array and get first item
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data[0];
       }
       
       return response.data;

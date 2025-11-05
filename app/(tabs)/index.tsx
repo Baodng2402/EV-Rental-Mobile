@@ -1,3 +1,4 @@
+import AIChatBubble from "@/components/ai/AIChatBubble";
 import { BrandVehiclesModal } from "@/components/vehicles/BrandVehiclesModal";
 import { VehicleDetailModal } from "@/components/vehicles/VehicleDetailModal";
 import { VehicleListItem } from "@/components/vehicles/VehicleListItem";
@@ -16,14 +17,14 @@ import Feather from "@expo/vector-icons/Feather";
 import { Link, useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View
+    ActivityIndicator,
+    FlatList,
+    Image,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/images/logo.jpg";
@@ -468,6 +469,9 @@ const HomeScreen = () => {
         isFavorite={isFavorite}
         onClose={handleCloseVehicleModal}
       />
+
+      {/* AI Chat Bubble */}
+      <AIChatBubble vehiclesData={vehicles} />
     </SafeAreaView>
   );
 };

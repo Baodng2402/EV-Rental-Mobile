@@ -1,3 +1,4 @@
+import AIChatBubble from "@/components/ai/AIChatBubble";
 import { SwipeableFavoriteItem } from "@/components/favorites/SwipeableFavoriteItem";
 import { VehicleDetailModal } from "@/components/vehicles/VehicleDetailModal";
 import { COLORS } from "@/constants/theme";
@@ -17,14 +18,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const FavoriteList = () => {
   const router = useRouter();
-  const { favorites, toggleFavorite, isFavorite, clearAllFavorites, removeFavorites } =
-    useFavorites();
+  const {
+    favorites,
+    toggleFavorite,
+    isFavorite,
+    clearAllFavorites,
+    removeFavorites,
+  } = useFavorites();
   const { vehicles } = useVehicles();
   const { brands } = useBrands();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedForDeletion, setSelectedForDeletion] = useState<Set<string>>(new Set());
+  const [selectedForDeletion, setSelectedForDeletion] = useState<Set<string>>(
+    new Set()
+  );
 
   const brandLookup = useMemo(() => {
     const mapping: Record<string, IPropsBrand> = {};
@@ -57,14 +65,16 @@ const FavoriteList = () => {
     setSelectedId(null);
   };
 
-    const handleBookVehicle = (vehicle: IPropsVehicle) => {
+  const handleBookVehicle = (vehicle: IPropsVehicle) => {
     handleClose();
     router.push({
       pathname: "/createBooking",
       params: {
         vehicleId: vehicle._id,
         brandId:
-          typeof vehicle.brand === "string" ? vehicle.brand : vehicle.brand?._id ?? "",
+          typeof vehicle.brand === "string"
+            ? vehicle.brand
+            : vehicle.brand?._id ?? "",
         stationId: vehicle.stationId ?? "",
       },
     });
@@ -129,8 +139,13 @@ const FavoriteList = () => {
           <View style={favoriteListStyles.headerRow}>
             <Text style={favoriteListStyles.heading}>Yêu thích</Text>
             {showDeleteAll && !isSelectionMode ? (
-              <Pressable style={favoriteListStyles.deleteAllButton} onPress={handleDeleteAll}>
-                <Text style={favoriteListStyles.deleteAllButtonText}>Xóa tất cả</Text>
+              <Pressable
+                style={favoriteListStyles.deleteAllButton}
+                onPress={handleDeleteAll}
+              >
+                <Text style={favoriteListStyles.deleteAllButtonText}>
+                  Xóa tất cả
+                </Text>
               </Pressable>
             ) : null}
           </View>
@@ -142,10 +157,15 @@ const FavoriteList = () => {
               </Text>
               <View style={favoriteListStyles.selectionActions}>
                 <Pressable
-                  style={[favoriteListStyles.selectionButton, favoriteListStyles.selectAllButton]}
+                  style={[
+                    favoriteListStyles.selectionButton,
+                    favoriteListStyles.selectAllButton,
+                  ]}
                   onPress={handleSelectAll}
                 >
-                  <Text style={favoriteListStyles.selectionButtonText}>Chọn tất cả</Text>
+                  <Text style={favoriteListStyles.selectionButtonText}>
+                    Chọn tất cả
+                  </Text>
                 </Pressable>
                 <Pressable
                   style={[
@@ -154,13 +174,20 @@ const FavoriteList = () => {
                   ]}
                   onPress={handleDeleteSelected}
                 >
-                  <Text style={favoriteListStyles.selectionButtonText}>Xóa</Text>
+                  <Text style={favoriteListStyles.selectionButtonText}>
+                    Xóa
+                  </Text>
                 </Pressable>
                 <Pressable
-                  style={[favoriteListStyles.selectionButton, favoriteListStyles.cancelButton]}
+                  style={[
+                    favoriteListStyles.selectionButton,
+                    favoriteListStyles.cancelButton,
+                  ]}
                   onPress={handleCancelSelection}
                 >
-                  <Text style={favoriteListStyles.selectionButtonText}>Hủy</Text>
+                  <Text style={favoriteListStyles.selectionButtonText}>
+                    Hủy
+                  </Text>
                 </Pressable>
               </View>
             </View>
@@ -210,6 +237,7 @@ const FavoriteList = () => {
           isFavorite={isFavorite}
           onClose={handleClose}
         />
+        <AIChatBubble vehiclesData={vehicles} />
       </SafeAreaView>
     </GestureHandlerRootView>
   );

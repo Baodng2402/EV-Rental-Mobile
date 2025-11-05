@@ -20,7 +20,7 @@ const bookingServices = {
       
       const res = await apiClient.get(API_ENDPOINTS.BOOKING, { params });
       
-      console.log("[bookingServices] getBookings response:", res.data);
+      // console.log("[bookingServices] getBookings response:", res.data);
       
       // Handle different response structures
       if (res.data?.data && Array.isArray(res.data.data)) {
