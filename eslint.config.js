@@ -6,5 +6,17 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ['dist/*'],
+    settings: {
+      'import/resolver': {
+        'babel-module': {
+          alias: {
+            '@env': './env.d.ts',
+          },
+        },
+      },
+    },
+    rules: {
+      'import/no-unresolved': ['error', { ignore: ['^@env$'] }],
+    },
   },
 ]);
