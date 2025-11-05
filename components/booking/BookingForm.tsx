@@ -2,7 +2,7 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -82,6 +82,7 @@ const BookingForm = ({
     stationOptions,
     paymentMethodOptions,
     paymentMethodLabel,
+    paymentMethod,
     setPaymentMethod,
     handleStationOptionSelect,
     handleStationMapSelect,
@@ -110,7 +111,6 @@ const BookingForm = ({
   const router = useRouter();
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   
   const hasSelectedVehicle = Boolean(selectedVehicle);
   const hasStationOptions = stationOptions.length > 0;
@@ -213,9 +213,15 @@ const BookingForm = ({
   const handleBookingSubmit = async () => {
     const bookingId = await handleSubmit();
     if (bookingId) {
-      setCurrentBookingId(bookingId);
+      // Check payment method - only create PayOS link for bank_transfer
+      if (paymentMethod === "cash") {
+        // For cash payment, just show success and navigate to booking list
+        showToast("success", "Đơn đặt xe thành công", "Vui lòng thanh toán tiền mặt khi nhận xe tại trạm");
+        router.push("/(tabs)/booking");
+        return;
+      }
       
-      // STEP 1: Create payment link
+      // STEP 1: Create payment link for bank_transfer
       try {
         showToast("info", "Đang tạo link thanh toán...", "Vui lòng chờ");
         
