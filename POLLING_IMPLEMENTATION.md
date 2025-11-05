@@ -22,6 +22,7 @@ createPayOSCheckout: async (bookingId: string): Promise<{ orderCode: string; che
   return { orderCode, checkoutLink };
 }
 ```
+hehe
 
 **✅ ĐÚNG:**
 - Endpoint: `POST /payos/checkout` (KHÔNG có prefix `/api` - vì baseURL đã có `/api`)
